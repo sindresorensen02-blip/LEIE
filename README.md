@@ -1,146 +1,142 @@
 # Leie
 
-Et kart-basert utleieprodukt for det norske leiemarkedet, med Bergen sentrum som første marked. Inspirert av Snap Map – men for å oppdage rom, hybler, leiligheter og hus.
+Leie is a Bergen-first rental discovery MVP for finding affordable houses, apartments, studios, rooms, and shared rooms nearby. The prototype uses a generated futuristic Bergen image as the visual map surface, calibrated rental pins, realistic seed data, and safe source adapter stubs for future approved integrations.
 
-> "Snap Map møter premium norsk leie­oppdagelse."
+## Stack
 
-Alt UI er på norsk. Mørkt, illuminert design. Bygget med Expo, TypeScript, Expo Router, Supabase og en custom illuminated SVG-kart-renderer.
+- Next.js App Router
+- TypeScript and React
+- Tailwind CSS
+- SQLite via `better-sqlite3`
+- Zod validation
+- Vitest
 
-## Highlights
-
-- **Illuminert demo-kart** for Bergen sentrum (custom SVG, glow, pulse, koblingslinjer) – fungerer i Expo Go uten Mapbox-token.
-- **Mock-først** – appen kjører med 24 realistiske Bergen-annonser uten Supabase.
-- **Service-lag** isolerer datakilder: `listingsService`, `favoritesService`, `authService` veksler automatisk mellom Supabase og lokal/mock.
-- **Filter** for pris, type, soverom, møblering, og innflytting.
-- **Favoritter** – Supabase når innlogget, AsyncStorage som fallback.
-- **Admin/utleier-skjema** for å opprette annonser (Supabase eller lokal demo).
-- **SQL-migrasjon med RLS** klar til kjøring (`supabase/migrations/0001_initial_schema.sql`).
-
-## Komme i gang
+## Install
 
 ```bash
 npm install
-npm run start
 ```
 
-Skann QR-koden i Expo Go på telefonen, eller kjør `npm run ios` / `npm run android`.
-
-Appen starter på kart-fanen sentrert på Bergen sentrum.
-
-## Miljøvariabler
-
-Kopier `.env.example` til `.env` (alle er valgfrie):
+## Run Locally
 
 ```bash
-EXPO_PUBLIC_SUPABASE_URL=
-EXPO_PUBLIC_SUPABASE_ANON_KEY=
-EXPO_PUBLIC_MAPBOX_TOKEN=
+npm run seed
+npm run dev
 ```
 
-| Variabel                       | Hva skjer hvis den mangler                                                |
-| ------------------------------ | ------------------------------------------------------------------------- |
-| `EXPO_PUBLIC_SUPABASE_*`       | Appen bruker mock-data + lokal AsyncStorage for favoritter og ny annonse. |
-| `EXPO_PUBLIC_MAPBOX_TOKEN`     | Demo-kartet (custom SVG) brukes – ingen krasj.                            |
+Open the local Next.js URL printed by the dev server.
 
-## Supabase-oppsett
+## Bergen Map Image
 
-Se [`supabase/README.md`](./supabase/README.md). Kjapp versjon:
+The app expects the generated Bergen artwork here:
 
-1. Lag et Supabase-prosjekt.
-2. Kjør `supabase/migrations/0001_initial_schema.sql` i SQL-editoren.
-3. Sett `EXPO_PUBLIC_SUPABASE_URL` og `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
-4. Restart Expo med `--clear`.
-
-Migrasjonen oppretter `profiles`, `listings`, `listing_images`, `favorites`, RLS-policies, en `set_updated_at`-trigger, og en `handle_new_user`-trigger som oppretter en `profiles`-rad ved registrering.
-
-## Mapbox-oppsett (valgfritt for MVP)
-
-MVP-en har en custom illuminated SVG-kart-komponent (`IlluminatedMap`) som er den **standard demo-opplevelsen**. Den fungerer i Expo Go uten konfigurasjon.
-
-For å bytte til ekte Mapbox:
-
-1. Installer `@rnmapbox/maps` (krever EAS dev client – ikke Expo Go).
-2. Bytt ut innholdet av `<IlluminatedMap />` i `app/(tabs)/index.tsx` mot en `<MapboxGL.MapView />`.
-3. Fyll inn `EXPO_PUBLIC_MAPBOX_TOKEN`.
-
-Markørstil, fargene per type, og det glødende preget bør gjenskapes med Mapbox layer-styling for å beholde det visuelle uttrykket.
-
-## Mappestruktur
-
-```
-app/                    Expo Router-skjermer
-  _layout.tsx           Root – providers og stack
-  (tabs)/               Bunn-tabs (Kart / Liste / Favoritter / Admin)
-  listing/[id].tsx      Detaljside
-
-src/
-  components/           Gjenbrukbare UI-komponenter
-  data/mockListings.ts  24 demo-annonser i Bergen sentrum
-  hooks/                useListings, useFavorites, useFiltersContext, useAuth, format
-  lib/                  config, supabase-klient, storage
-  providers/            Auth + Favorites context
-  services/             listingsService, favoritesService, authService, aiService (placeholders)
-  theme/                colors, spacing, typography, shadows
-  types/                Listing, Profile, Favorite, ListingFilters
-
-supabase/
-  migrations/           SQL-migrasjon
-  README.md             Supabase setup
+```text
+public/images/bergen-leie-map.png
 ```
 
-## Funksjonalitet i MVP
+That image is used by `components/MapView.tsx` as the full visual map background. Rental pins are rendered as absolute overlays using calibrated x/y percentages.
 
-| Område            | Status                                                                  |
-| ----------------- | ----------------------------------------------------------------------- |
-| Kart              | Custom illuminated SVG-kart med glødende markører + pulse for valgt    |
-| Liste             | Filterte kort med bilde, pris, type, område, soverom                    |
-| Detaljside        | Bilde, pris, areal, soverom, møblering, beskrivelse, "Se annonse"-knapp |
-| Filtre            | Maks pris, type, soverom (min), møblering, ledig fra. Nullstill.        |
-| Favoritter        | Toggle på kort/markør/detalj. Lokalt eller Supabase.                     |
-| Admin-skjema      | Skjema for ny annonse. Lagrer i Supabase eller lokalt.                  |
-| Auth              | Supabase Auth (e-post). Hvis ikke konfigurert: gjest-modus.             |
-| Tomme tilstander  | Egne meldinger på norsk for ingen treff, ingen favoritter, etc.        |
-| Lasting/feil      | Spinner, feilmeldinger, fallback.                                       |
+## Mock Data
 
-## Designsystem
+The app ships with 42 realistic Bergen rentals in `lib/mockListings.ts`, covering:
 
-Definert i `src/theme/`:
+- Sentrum, Bergenhus, Sandviken, Åsane, Fana, Årstad, Fyllingsdalen, Laksevåg, Loddefjord, Nesttun, Nygård, Møhlenpris, Nordnes, Danmarksplass, Landås, Kronstad, Paradis, Eidsvåg, Bryggen, and Solheimsviken
+- Houses, apartments, studios, rooms, and shared rooms
+- Monthly and nightly rentals
+- Prices from 5,500 NOK to 28,000 NOK monthly equivalent
+- FINN.no, Airbnb, Hybel.no, Utleiemegleren, Heimstaden, and mock-safe source coverage
 
-- **Bakgrunn**: `#04060B` / `#0A1220` / `#0E1A2E`
-- **Aksent**: cyan `#5BE3F2`, teal `#2BC4D9`, soft blue `#7CA8FF`
-- **Markørfarger** per type (room/studio/apartment/house) – synlige i Legend-komponenten
-- **Skygger** og glødende effekter via `shadows.glow` og pulse-animasjon
+Seed SQLite with:
 
-## Kjente begrensninger / "vet om"
+```bash
+npm run seed
+```
 
-- Ingen ekte Mapbox-integrasjon – custom SVG i stedet (bevisst valg for MVP).
-- Bilder i mock-annonser hentes fra Unsplash-URLer (placeholder).
-- Auth-skjerm er ikke bygget i MVP – innlogging skjer programmatisk via `authService`. UI for innlogging er neste steg.
-- AI-services er placeholders med TODO-kommentarer i `src/services/aiService.ts`.
-- Ingen scraping. Annonser er enten landlord-genererte, partnerbaserte, eller mock.
-- Ingen push, betaling, chat, eller multi-by – bevisst utenfor MVP-scope.
+## Commands
 
-## Neste steg
+```bash
+npm run dev        # Start Next.js
+npm run build      # Production build
+npm run seed       # Seed SQLite with mock listings
+npm run scrape     # Import from safe mock source adapters
+npm run test       # Run Vitest tests
+npm run typecheck  # Run TypeScript checks
+```
 
-1. Innloggings- / registrerings-UI (skjerm + e-post-flow).
-2. Bytte ut `IlluminatedMap` med `@rnmapbox/maps` bak en EAS dev client.
-3. Bilde-opplasting til Supabase Storage.
-4. Audit-logg for status-endringer i admin-flyten.
-5. Søk på adresse / område med autocomplete.
-6. Utvide til Bergen utenfor sentrum, så Oslo og Trondheim. Strukturen i `mockListings.ts` og databasen støtter `city` allerede.
-7. Aktivere placeholders i `aiService.ts` (parsing, ranking, duplikatdeteksjon) bak en server-side LLM-tjeneste.
+## API
 
-## Test-sjekkliste
+`GET /api/listings` returns normalized listings and supports:
 
-- [ ] Start uten `.env`. Appen åpner kartet med 24 Bergen-annonser. Ingen krasj.
-- [ ] Trykk på en markør → bunn-ark vises med tittel, pris, område. Pulse rundt valgt markør.
-- [ ] Bytt til **Liste**-fanen → samme annonser som kort.
-- [ ] Trykk på et hjerteikon → fanen **Favoritter** viser annonsen. Force-quit appen og start igjen → favoritter beholdes.
-- [ ] Åpne filterpanelet, sett maks pris til 10 000 → bare hybler/rom igjen. Nullstill.
-- [ ] **Admin** → fyll inn skjema → annonsen vises på kartet (lagres lokalt uten Supabase).
-- [ ] Sett `EXPO_PUBLIC_SUPABASE_*`, kjør migrasjonen, og verifiser at annonser persisterer i `listings`-tabellen.
-- [ ] `npm run typecheck` → ingen feil.
+- `maxPrice`
+- `propertyType`
+- `source`
+- `minSize`
+- `minBedrooms`
+- `includeShortTerm`
+- `onlyAvailableNow`
+- `sort`
+- `lat`
+- `lng`
 
-## Feedback
+`POST /api/scrape` is development-only and imports from the safe mock adapters, geocodes missing coordinates through the mock centroid fallback, deduplicates listings, and saves to SQLite.
 
-`/help` i Claude Code, eller åpne en issue.
+## Source Adapters
+
+Adapters live in `lib/sources/` and all implement the same `SourceAdapter` interface.
+
+Current status:
+
+| Source | Status | Notes |
+| --- | --- | --- |
+| FINN.no | `requires_permission` | Live data requires approved API access, a feed, partner access, or written permission. |
+| Airbnb | `requires_permission` | Live data requires approved API/feed/partner access or written permission. |
+| Hybel.no | `requires_permission` | Live data requires approved API/feed/partner access or written permission. |
+| Utleiemegleren.no | `requires_permission` | Live data requires approved API/feed/partner access or written permission. |
+| Heimstaden.no | `requires_permission` | Live data requires approved API/feed/partner access or written permission. |
+
+All adapters return realistic Bergen mock listings by default. There is no website scraping, browser automation, login-wall access, CAPTCHA handling, proxy usage, or restriction-bypass logic.
+
+## Compliance Notes
+
+Leie is mock-first. Do not add live collection unless the source clearly permits it through an official API, public feed, partner agreement, or written permission. Do not bypass robots.txt, Terms of Service, rate limits, anti-bot systems, paywalls, CAPTCHAs, or login walls.
+
+## Map Calibration
+
+The background image is not a real map tile. `lib/mapCalibration.ts` converts lat/lng values to image percentages using approximate Bergen bounds:
+
+```ts
+const BERGEN_IMAGE_BOUNDS = {
+  north: 60.52,
+  south: 60.25,
+  west: 5.12,
+  east: 5.55
+};
+```
+
+To tune pin positions:
+
+- Increase the west/east span if pins are too far left or right.
+- Move west/east together if the whole pin layer needs horizontal shifting.
+- Increase/decrease north/south if pins are too high or low.
+- Tune against the generated artwork, not against real map tiles.
+
+## Geocoding
+
+`lib/geocoding.ts` provides a provider abstraction and SQLite cache. In development it uses mock Bergen neighborhood centroids from `lib/neighborhoods.ts`. If an exact address is missing, the app falls back to a known neighborhood centroid.
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` if needed:
+
+```bash
+DATABASE_URL="file:./leie.db"
+GEOCODING_PROVIDER="mock"
+GEOCODING_API_KEY=""
+ENABLE_APPROVED_FINN_INTEGRATION="false"
+ENABLE_APPROVED_AIRBNB_INTEGRATION="false"
+ENABLE_APPROVED_HYBEL_INTEGRATION="false"
+ENABLE_APPROVED_UTLEIEMEGLEREN_INTEGRATION="false"
+ENABLE_APPROVED_HEIMSTADEN_INTEGRATION="false"
+```
+
+The `ENABLE_APPROVED_*` flags are placeholders for future integrations after approved access exists.
