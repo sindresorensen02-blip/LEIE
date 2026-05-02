@@ -103,13 +103,15 @@ Leie is mock-first. Do not add live collection unless the source clearly permits
 
 ## Map
 
-`components/MapView.tsx` renders a real MapLibre GL JS map centered on Bergen. The custom dark style uses OpenStreetMap/CARTO dark raster tiles, Leie cyan/teal atmosphere layers, and custom DOM markers.
+`components/MapView.tsx` renders a real MapLibre GL JS map centered on Bergen. The custom dark style uses readable OpenStreetMap/CARTO raster tiles with Leie cyan/teal atmosphere layers.
 
 Pins are placed from listing coordinates:
 
 - `locationAccuracy: "exact"` means the listing supplied exact latitude/longitude.
 - `locationAccuracy: "address_geocoded"` means a full address was geocoded and cached.
 - `locationAccuracy: "approximate_area"` means only an area/neighborhood was available, so the pin uses a Bergen neighborhood centroid and displays an approximate marker.
+
+Listings are rendered as a MapLibre GeoJSON `Point` source with coordinates in `[longitude, latitude]` order. Pin circles, selected states, cheapest rings, and approximate labels are map layers, so they stay geographically fixed during zoom, pan, resize, and mobile layout changes.
 
 The generated Bergen image is never used for lat/lng positioning.
 

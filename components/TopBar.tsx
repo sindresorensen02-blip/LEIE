@@ -30,7 +30,7 @@ export function TopBar({
           />
           <div>
             <div className="text-xs uppercase tracking-[0.28em] text-cyan/80">Leie for iOS</div>
-            <h1 className="text-2xl font-semibold text-frost md:text-3xl">Swipe Bergen’s best deals</h1>
+            <h1 className="text-2xl font-semibold text-frost md:text-3xl">Leie</h1>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
