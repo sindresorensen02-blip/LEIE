@@ -16,6 +16,8 @@ export type PropertyType =
   | "studio"
   | "unknown";
 
+export type LocationAccuracy = "exact" | "address_geocoded" | "approximate_area";
+
 export type NormalizedListing = {
   id: string;
   externalId: string | null;
@@ -31,6 +33,7 @@ export type NormalizedListing = {
   area: string | null;
   latitude: number | null;
   longitude: number | null;
+  locationAccuracy: LocationAccuracy;
   bedrooms: number | null;
   sizeM2: number | null;
   availableFrom: string | null;
@@ -93,6 +96,8 @@ export const propertyTypeSchema = z.enum([
   "unknown"
 ]);
 
+export const locationAccuracySchema = z.enum(["exact", "address_geocoded", "approximate_area"]);
+
 export const listingSortSchema = z.enum([
   "cheapest",
   "newest",
@@ -115,6 +120,7 @@ export const normalizedListingSchema = z.object({
   area: z.string().nullable(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
+  locationAccuracy: locationAccuracySchema,
   bedrooms: z.number().nullable(),
   sizeM2: z.number().nullable(),
   availableFrom: z.string().nullable(),

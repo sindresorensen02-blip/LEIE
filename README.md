@@ -1,10 +1,11 @@
 # Leie
 
-Leie is a Bergen-first rental discovery MVP for finding affordable houses, apartments, studios, rooms, and shared rooms nearby. The prototype uses a generated futuristic Bergen image as the visual map surface, calibrated rental pins, realistic seed data, and safe source adapter stubs for future approved integrations.
+Leie is a Bergen-first rental discovery MVP for finding affordable houses, apartments, studios, rooms, and shared rooms nearby. The prototype uses a real interactive MapLibre GL JS map, realistic seed data, market-value pins, and safe source adapter stubs for future approved integrations.
 
 ## Stack
 
 - Next.js App Router
+- MapLibre GL JS
 - TypeScript and React
 - Tailwind CSS
 - SQLite via `better-sqlite3`
@@ -26,7 +27,7 @@ npm run dev
 
 Open the local Next.js URL printed by the dev server.
 
-## Bergen Map Image
+## Bergen Hero Image
 
 The app expects the generated Bergen artwork here:
 
@@ -34,7 +35,7 @@ The app expects the generated Bergen artwork here:
 public/images/bergen-leie-map.png
 ```
 
-That image is used by `components/MapView.tsx` as the full visual map background. Rental pins are rendered as absolute overlays using calibrated x/y percentages.
+That image is now used as a compact onboarding/brand asset in the app chrome. It is not used as the coordinate system. The live rental map is rendered with MapLibre GL JS using real listing latitude/longitude values.
 
 ## Mock Data
 
@@ -100,25 +101,17 @@ All adapters return realistic Bergen mock listings by default. There is no websi
 
 Leie is mock-first. Do not add live collection unless the source clearly permits it through an official API, public feed, partner agreement, or written permission. Do not bypass robots.txt, Terms of Service, rate limits, anti-bot systems, paywalls, CAPTCHAs, or login walls.
 
-## Map Calibration
+## Map
 
-The background image is not a real map tile. `lib/mapCalibration.ts` converts lat/lng values to image percentages using approximate Bergen bounds:
+`components/MapView.tsx` renders a real MapLibre GL JS map centered on Bergen. The custom dark style uses OpenStreetMap/CARTO dark raster tiles, Leie cyan/teal atmosphere layers, and custom DOM markers.
 
-```ts
-const BERGEN_IMAGE_BOUNDS = {
-  north: 60.52,
-  south: 60.25,
-  west: 5.12,
-  east: 5.55
-};
-```
+Pins are placed from listing coordinates:
 
-To tune pin positions:
+- `locationAccuracy: "exact"` means the listing supplied exact latitude/longitude.
+- `locationAccuracy: "address_geocoded"` means a full address was geocoded and cached.
+- `locationAccuracy: "approximate_area"` means only an area/neighborhood was available, so the pin uses a Bergen neighborhood centroid and displays an approximate marker.
 
-- Increase the west/east span if pins are too far left or right.
-- Move west/east together if the whole pin layer needs horizontal shifting.
-- Increase/decrease north/south if pins are too high or low.
-- Tune against the generated artwork, not against real map tiles.
+The generated Bergen image is never used for lat/lng positioning.
 
 ## Geocoding
 

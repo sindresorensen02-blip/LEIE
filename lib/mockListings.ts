@@ -82,6 +82,7 @@ export const mockListings: NormalizedListing[] = seeds.map((seed, index) => {
     area: seed.area,
     latitude: seed.lat,
     longitude: seed.lng,
+    locationAccuracy: "exact",
     bedrooms: seed.bedrooms,
     sizeM2: seed.size,
     availableFrom: seed.availableFrom,

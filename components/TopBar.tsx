@@ -22,9 +22,16 @@ export function TopBar({
   return (
     <header className="glass z-30 rounded-lg px-4 py-3">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-[0.28em] text-cyan/80">Leie for iOS</div>
-          <h1 className="text-2xl font-semibold text-frost md:text-3xl">Swipe Bergen’s best deals</h1>
+        <div className="flex items-center gap-3">
+          <img
+            src="/images/bergen-leie-map.png"
+            alt=""
+            className="h-14 w-10 rounded-md border border-cyan/25 object-cover shadow-glow"
+          />
+          <div>
+            <div className="text-xs uppercase tracking-[0.28em] text-cyan/80">Leie for iOS</div>
+            <h1 className="text-2xl font-semibold text-frost md:text-3xl">Swipe Bergen’s best deals</h1>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-frost/70">

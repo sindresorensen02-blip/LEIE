@@ -24,6 +24,12 @@ const marketCopy = {
   }
 };
 
+const accuracyCopy = {
+  exact: "Exact coordinates",
+  address_geocoded: "Address geocoded",
+  approximate_area: "Approximate area"
+};
+
 export function ListingCard({
   listing,
   selected,
@@ -89,6 +95,11 @@ export function ListingCard({
         <span className="flex items-center gap-2"><Maximize2 size={14} />{listing.sizeM2 ?? "?"} m²</span>
         <span className="flex items-center gap-2"><BedDouble size={14} />{listing.bedrooms ?? 0} bedrooms</span>
         <span className="flex items-center gap-2"><CalendarDays size={14} />{listing.availableFrom ?? "Ask"}</span>
+      </div>
+
+      <div className="mt-3 rounded-md border border-white/10 px-3 py-2 text-xs text-frost/60">
+        {accuracyCopy[listing.locationAccuracy]}
+        {listing.locationAccuracy === "approximate_area" && " · pin uses neighborhood centroid"}
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">

@@ -35,6 +35,7 @@ export function migrate() {
       area text,
       latitude real,
       longitude real,
+      location_accuracy text not null default 'approximate_area',
       bedrooms integer,
       size_m2 integer,
       available_from text,
@@ -52,6 +53,10 @@ export function migrate() {
       updated_at text not null
     );
   `);
+  const columns = database.prepare("pragma table_info(listings)").all() as { name: string }[];
+  if (!columns.some((column) => column.name === "location_accuracy")) {
+    database.exec("alter table listings add column location_accuracy text not null default 'approximate_area'");
+  }
   if (!db) database.close();
 }
 
@@ -71,6 +76,9 @@ function rowToListing(row: Record<string, unknown>): NormalizedListing {
     area: row.area ?? null,
     latitude: row.latitude ?? null,
     longitude: row.longitude ?? null,
+    locationAccuracy:
+      row.location_accuracy ??
+      (row.latitude != null && row.longitude != null ? "exact" : "approximate_area"),
     bedrooms: row.bedrooms ?? null,
     sizeM2: row.size_m2 ?? null,
     availableFrom: row.available_from ?? null,
@@ -96,11 +104,11 @@ export function upsertListings(listings: NormalizedListing[]) {
     insert into listings (
       id, external_id, source, title, listing_url, price_monthly_nok, price_nightly_nok,
       estimated_monthly_nok, deposit_nok, property_type, address, area, latitude, longitude,
-      bedrooms, size_m2, available_from, images, description, scraped_at, updated_at
+      location_accuracy, bedrooms, size_m2, available_from, images, description, scraped_at, updated_at
     ) values (
       @id, @externalId, @source, @title, @listingUrl, @priceMonthlyNok, @priceNightlyNok,
       @estimatedMonthlyNok, @depositNok, @propertyType, @address, @area, @latitude, @longitude,
-      @bedrooms, @sizeM2, @availableFrom, @images, @description, @scrapedAt, @updatedAt
+      @locationAccuracy, @bedrooms, @sizeM2, @availableFrom, @images, @description, @scrapedAt, @updatedAt
     )
     on conflict(id) do update set
       external_id=excluded.external_id,
@@ -116,6 +124,7 @@ export function upsertListings(listings: NormalizedListing[]) {
       area=excluded.area,
       latitude=excluded.latitude,
       longitude=excluded.longitude,
+      location_accuracy=excluded.location_accuracy,
       bedrooms=excluded.bedrooms,
       size_m2=excluded.size_m2,
       available_from=excluded.available_from,

@@ -23,7 +23,7 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
   const [selectedId, setSelectedId] = useState(initialListings[0]?.id ?? null);
   const [locationLabel, setLocationLabel] = useState("Using Bergen Sentrum as default");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [listingsOpen, setListingsOpen] = useState(false);
+  const [listingsOpen, setListingsOpen] = useState(true);
 
   const listings = useMemo(() => {
     const queried = applyListingQuery(initialListings, filters);
@@ -118,7 +118,7 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
         </div>
       </div>
 
-      <section className="pointer-events-none fixed inset-x-3 bottom-3 z-40 md:inset-x-6 md:bottom-5">
+      <section className="pointer-events-none fixed inset-x-3 bottom-3 z-40 md:hidden">
         <div className="pointer-events-auto mx-auto max-w-6xl">
           {!listingsOpen && selected && (
             <button
@@ -185,6 +185,57 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
           )}
         </div>
       </section>
+
+      <aside className="pointer-events-none fixed bottom-5 right-5 top-32 z-30 hidden w-[410px] md:block xl:w-[450px]">
+        <div className="pointer-events-auto h-full">
+          {!listingsOpen && selected && (
+            <button
+              type="button"
+              onClick={() => setListingsOpen(true)}
+              className="glass flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm text-frost transition hover:border-cyan/40"
+            >
+              <span>
+                <span className="block font-semibold text-cyan">{selected.title}</span>
+                <span className="text-xs text-frost/65">
+                  {selected.area} · {selected.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK
+                </span>
+              </span>
+              <span className="rounded-full border border-cyan/30 px-3 py-1 text-xs text-cyan">Panel</span>
+            </button>
+          )}
+
+          {listingsOpen && (
+            <div className="glass flex h-full flex-col overflow-hidden rounded-lg">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                <div>
+                  <div className="text-sm font-semibold text-frost">Quick deal deck</div>
+                  <div className="text-xs text-frost/55">Click pins or cards. Map stays fully interactive.</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setListingsOpen(false)}
+                  className="rounded-md border border-white/10 px-3 py-2 text-xs text-frost/70 transition hover:border-cyan/40 hover:text-cyan"
+                >
+                  Hide
+                </button>
+              </div>
+              <div className="grid gap-3 overflow-y-auto p-3">
+                {selected && <ListingCard listing={selected} selected />}
+                {listings
+                  .filter((listing) => listing.id !== selected?.id)
+                  .map((listing) => (
+                    <ListingCard
+                      key={listing.id}
+                      listing={listing}
+                      selected={selected?.id === listing.id}
+                      onSelect={() => handleSelect(listing)}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
     </main>
   );
 }
