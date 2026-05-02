@@ -14,7 +14,7 @@ export function MapView({
   onSelect: (listing: RankedListing) => void;
 }) {
   return (
-    <section className="relative min-h-[58vh] overflow-hidden rounded-none border-y border-white/10 bg-ink md:min-h-[calc(100vh-32px)] md:rounded-lg md:border">
+    <section className="relative min-h-screen overflow-hidden bg-ink">
       <img
         src="/images/bergen-leie-map.png"
         alt="Futuristic Bergen map background for Leie"
@@ -38,7 +38,7 @@ export function MapView({
           );
         })}
 
-      <div className="glass absolute bottom-4 left-4 max-w-[260px] rounded-lg p-3 text-xs text-frost/80">
+      <div className="glass absolute bottom-24 left-4 max-w-[260px] rounded-lg p-3 text-xs text-frost/80 md:bottom-5">
         <div className="mb-2 font-semibold text-cyan">Price signal</div>
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-cyan shadow-glow" />

@@ -8,7 +8,6 @@ import { BERGEN_SENTRUM } from "@/lib/neighborhoods";
 import type { ListingFilters, RankedListing } from "@/lib/types";
 import { FiltersPanel } from "./FiltersPanel";
 import { ListingCard } from "./ListingCard";
-import { ListingSidebar } from "./ListingSidebar";
 import { MapView } from "./MapView";
 import { TopBar } from "./TopBar";
 
@@ -23,6 +22,8 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
   });
   const [selectedId, setSelectedId] = useState(initialListings[0]?.id ?? null);
   const [locationLabel, setLocationLabel] = useState("Using Bergen Sentrum as default");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [listingsOpen, setListingsOpen] = useState(false);
 
   const listings = useMemo(() => {
     const queried = applyListingQuery(initialListings, filters);
@@ -40,7 +41,9 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
     });
 
     return filters.sort === "closest"
-      ? [...ranked].sort((a, b) => (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY))
+      ? [...ranked].sort(
+          (a, b) => (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY)
+        )
       : ranked;
   }, [initialListings, filters]);
 
@@ -49,7 +52,12 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
   function handleUseLocation() {
     if (!navigator.geolocation) {
       setLocationLabel("Using Bergen Sentrum as default");
-      setFilters((current) => ({ ...current, sort: "closest", lat: BERGEN_SENTRUM.latitude, lng: BERGEN_SENTRUM.longitude }));
+      setFilters((current) => ({
+        ...current,
+        sort: "closest",
+        lat: BERGEN_SENTRUM.latitude,
+        lng: BERGEN_SENTRUM.longitude
+      }));
       return;
     }
 
@@ -58,7 +66,12 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
         const { latitude, longitude } = position.coords;
         if (!isNearBergen(latitude, longitude)) {
           setLocationLabel("Using Bergen Sentrum as default");
-          setFilters((current) => ({ ...current, sort: "closest", lat: BERGEN_SENTRUM.latitude, lng: BERGEN_SENTRUM.longitude }));
+          setFilters((current) => ({
+            ...current,
+            sort: "closest",
+            lat: BERGEN_SENTRUM.latitude,
+            lng: BERGEN_SENTRUM.longitude
+          }));
           return;
         }
         setLocationLabel("Using your location");
@@ -66,7 +79,12 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
       },
       () => {
         setLocationLabel("Using Bergen Sentrum as default");
-        setFilters((current) => ({ ...current, sort: "closest", lat: BERGEN_SENTRUM.latitude, lng: BERGEN_SENTRUM.longitude }));
+        setFilters((current) => ({
+          ...current,
+          sort: "closest",
+          lat: BERGEN_SENTRUM.latitude,
+          lng: BERGEN_SENTRUM.longitude
+        }));
       },
       { enableHighAccuracy: false, maximumAge: 120000, timeout: 8000 }
     );
@@ -74,45 +92,87 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
 
   function handleSelect(listing: RankedListing) {
     setSelectedId(listing.id);
+    setListingsOpen(true);
   }
 
   return (
-    <main className="min-h-screen p-0 md:p-4">
-      <div className="grid min-h-screen gap-3 md:grid-cols-[minmax(0,1fr)_430px]">
-        <div className="relative grid min-h-0 gap-3">
-          <TopBar locationLabel={locationLabel} onUseLocation={handleUseLocation} />
-          <MapView listings={listings} selectedId={selected?.id ?? null} onSelect={handleSelect} />
+    <main className="relative min-h-screen overflow-hidden bg-ink">
+      <MapView listings={listings} selectedId={selected?.id ?? null} onSelect={handleSelect} />
+
+      <div className="pointer-events-none absolute inset-x-3 top-3 z-40 md:inset-x-6 md:top-5">
+        <div className="pointer-events-auto mx-auto max-w-6xl">
+          <TopBar
+            locationLabel={locationLabel}
+            onUseLocation={handleUseLocation}
+            filtersOpen={filtersOpen}
+            listingsOpen={listingsOpen}
+            listingCount={listings.length}
+            onToggleFilters={() => setFiltersOpen((open) => !open)}
+            onToggleListings={() => setListingsOpen((open) => !open)}
+          />
+          {filtersOpen && (
+            <div className="mt-3 max-h-[52vh] overflow-y-auto rounded-lg">
+              <FiltersPanel filters={filters} onChange={setFilters} />
+            </div>
+          )}
         </div>
-
-        <aside className="hidden min-h-0 grid-rows-[auto_1fr] gap-3 md:grid">
-          <FiltersPanel filters={filters} onChange={setFilters} />
-          <ListingSidebar listings={listings} selectedId={selected?.id ?? null} onSelect={handleSelect} />
-        </aside>
-
-        <section className="glass fixed inset-x-0 bottom-0 z-40 max-h-[48vh] overflow-y-auto rounded-t-lg p-3 md:hidden">
-          <FiltersPanel filters={filters} onChange={setFilters} />
-          <div className="mt-3">
-            {selected ? (
-              <ListingCard listing={selected} selected />
-            ) : (
-              <div className="rounded-lg border border-white/10 p-4 text-sm text-frost/65">No listing selected</div>
-            )}
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {listings.slice(0, 6).map((listing) => (
-              <button
-                key={listing.id}
-                type="button"
-                onClick={() => handleSelect(listing)}
-                className="rounded-md border border-white/10 px-3 py-2 text-left text-xs text-frost/75"
-              >
-                {listing.area}<br />
-                <span className="text-cyan">{listing.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK</span>
-              </button>
-            ))}
-          </div>
-        </section>
       </div>
+
+      <section className="pointer-events-none fixed inset-x-3 bottom-3 z-40 md:inset-x-6 md:bottom-5">
+        <div className="pointer-events-auto mx-auto max-w-6xl">
+          {!listingsOpen && selected && (
+            <button
+              type="button"
+              onClick={() => setListingsOpen(true)}
+              className="glass flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm text-frost transition hover:border-cyan/40 md:max-w-xl"
+            >
+              <span>
+                <span className="block font-semibold text-cyan">{selected.title}</span>
+                <span className="text-xs text-frost/65">
+                  {selected.area} · {selected.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK estimated monthly
+                </span>
+              </span>
+              <span className="rounded-full border border-cyan/30 px-3 py-1 text-xs text-cyan">Open</span>
+            </button>
+          )}
+
+          {listingsOpen && (
+            <div className="glass max-h-[46vh] overflow-hidden rounded-lg">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                <div>
+                  <div className="text-sm font-semibold text-frost">{listings.length} Bergen rentals</div>
+                  <div className="text-xs text-frost/55">Tap pins or cards to compare the cheapest homes.</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setListingsOpen(false)}
+                  className="rounded-md border border-white/10 px-3 py-2 text-xs text-frost/70 transition hover:border-cyan/40 hover:text-cyan"
+                >
+                  Hide
+                </button>
+              </div>
+              <div className="grid max-h-[36vh] gap-3 overflow-y-auto p-3 md:grid-cols-2 xl:grid-cols-3">
+                {selected && (
+                  <div className="md:col-span-2 xl:col-span-1">
+                    <ListingCard listing={selected} selected />
+                  </div>
+                )}
+                {listings
+                  .filter((listing) => listing.id !== selected?.id)
+                  .slice(0, 11)
+                  .map((listing) => (
+                    <ListingCard
+                      key={listing.id}
+                      listing={listing}
+                      selected={selected?.id === listing.id}
+                      onSelect={() => handleSelect(listing)}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
     </main>
   );
 }
