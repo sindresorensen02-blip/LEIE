@@ -127,9 +127,19 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
               className="glass flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm text-frost transition hover:border-cyan/40 md:max-w-xl"
             >
               <span>
+                <span className="mb-1 inline-flex rounded-full border border-emerald-300/30 bg-emerald-400/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-200">
+                  Quick pick
+                </span>
                 <span className="block font-semibold text-cyan">{selected.title}</span>
                 <span className="text-xs text-frost/65">
-                  {selected.area} · {selected.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK estimated monthly
+                  {selected.area} · {selected.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK ·{" "}
+                  {selected.marketSignal === "under_market"
+                    ? "under market"
+                    : selected.marketSignal === "market_price"
+                      ? "around market"
+                      : selected.marketSignal === "above_market"
+                        ? "above market"
+                        : "market pending"}
                 </span>
               </span>
               <span className="rounded-full border border-cyan/30 px-3 py-1 text-xs text-cyan">Open</span>
@@ -140,8 +150,10 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
             <div className="glass max-h-[46vh] overflow-hidden rounded-lg">
               <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                 <div>
-                  <div className="text-sm font-semibold text-frost">{listings.length} Bergen rentals</div>
-                  <div className="text-xs text-frost/55">Tap pins or cards to compare the cheapest homes.</div>
+                  <div className="text-sm font-semibold text-frost">Quick deal deck</div>
+                  <div className="text-xs text-frost/55">
+                    Green is below local market, yellow is fair, red is expensive.
+                  </div>
                 </div>
                 <button
                   type="button"

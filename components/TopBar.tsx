@@ -23,8 +23,8 @@ export function TopBar({
     <header className="glass z-30 rounded-lg px-4 py-3">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <div className="text-xs uppercase tracking-[0.28em] text-cyan/80">Leie Bergen MVP</div>
-          <h1 className="text-2xl font-semibold text-frost md:text-3xl">Bergen rental map</h1>
+          <div className="text-xs uppercase tracking-[0.28em] text-cyan/80">Leie for iOS</div>
+          <h1 className="text-2xl font-semibold text-frost md:text-3xl">Swipe Bergen’s best deals</h1>
         </div>
         <div className="flex flex-wrap gap-2">
           <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-frost/70">

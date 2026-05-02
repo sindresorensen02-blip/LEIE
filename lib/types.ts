@@ -43,12 +43,20 @@ export type NormalizedListing = {
 export type ListingBadge =
   | "Cheapest"
   | "Good value"
+  | "Under market"
+  | "Market price"
+  | "Above market"
   | "Room"
   | "Short-term"
   | "Available now";
 
+export type MarketSignal = "under_market" | "market_price" | "above_market" | "unknown";
+
 export type RankedListing = NormalizedListing & {
   badges: ListingBadge[];
+  marketPriceNok?: number | null;
+  marketDeltaPercent?: number | null;
+  marketSignal?: MarketSignal;
   distanceKm?: number | null;
 };
 

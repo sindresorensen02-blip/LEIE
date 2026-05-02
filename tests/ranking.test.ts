@@ -10,4 +10,11 @@ describe("ranking", () => {
     expect(ranked.some((listing) => listing.badges.includes("Room"))).toBe(true);
     expect(ranked.some((listing) => listing.badges.includes("Available now"))).toBe(true);
   });
+
+  it("classifies listings against their area market median", () => {
+    const ranked = rankListings(mockListings);
+    expect(ranked.some((listing) => listing.marketSignal === "under_market")).toBe(true);
+    expect(ranked.some((listing) => listing.marketSignal === "market_price")).toBe(true);
+    expect(ranked.some((listing) => listing.marketSignal === "above_market")).toBe(true);
+  });
 });

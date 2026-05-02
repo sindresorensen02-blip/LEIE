@@ -5,6 +5,25 @@ import { ArrowUpRight, BedDouble, CalendarDays, House, Maximize2 } from "lucide-
 import { formatNok } from "@/lib/price";
 import { propertyTypeLabels, sourceLabels, type RankedListing } from "@/lib/types";
 
+const marketCopy = {
+  under_market: {
+    label: "Under market",
+    className: "border-emerald-300/45 bg-emerald-400/12 text-emerald-200"
+  },
+  market_price: {
+    label: "Around market",
+    className: "border-yellow-300/45 bg-yellow-300/12 text-yellow-100"
+  },
+  above_market: {
+    label: "Above market",
+    className: "border-red-300/45 bg-red-400/12 text-red-100"
+  },
+  unknown: {
+    label: "Market unknown",
+    className: "border-cyan/25 bg-cyan/10 text-cyan"
+  }
+};
+
 export function ListingCard({
   listing,
   selected,
@@ -14,6 +33,12 @@ export function ListingCard({
   selected?: boolean;
   onSelect?: () => void;
 }) {
+  const signal = marketCopy[listing.marketSignal ?? "unknown"];
+  const marketDelta =
+    listing.marketDeltaPercent == null
+      ? null
+      : `${listing.marketDeltaPercent > 0 ? "+" : ""}${Math.round(listing.marketDeltaPercent)}%`;
+
   return (
     <article
       className={clsx(
@@ -47,6 +72,15 @@ export function ListingCard({
           {listing.priceNightlyNok
             ? `${formatNok(listing.priceNightlyNok)} nightly · estimated monthly`
             : `${formatNok(listing.priceMonthlyNok)} monthly`}
+        </div>
+      </div>
+
+      <div className={clsx("mb-3 rounded-md border px-3 py-2 text-xs", signal.className)}>
+        <div className="font-semibold">{signal.label}</div>
+        <div className="mt-0.5 opacity-80">
+          {listing.marketPriceNok != null
+            ? `${marketDelta} vs ${listing.area} median (${formatNok(listing.marketPriceNok)})`
+            : "Area market estimate pending"}
         </div>
       </div>
 
