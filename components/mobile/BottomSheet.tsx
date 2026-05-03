@@ -29,7 +29,7 @@ export function BottomSheet({
   teal,
   error,
   defaultSnap = "half",
-  cardRadius = 14
+  cardRadius = 11
 }: {
   listings: RankedListing[];
   totalCosts: Map<string, TotalMonthlyCost>;
@@ -48,6 +48,7 @@ export function BottomSheet({
   const [snap, setSnap] = useState<SnapKey>(defaultSnap);
   const [dragY, setDragY] = useState<number | null>(null);
   const [deviceH, setDeviceH] = useState(844);
+  const sheetRef = useRef<HTMLDivElement | null>(null);
   const dragging = useRef(false);
   const startRef = useRef<{ y: number; snap: SnapKey } | null>(null);
 
@@ -56,10 +57,17 @@ export function BottomSheet({
   }, [defaultSnap]);
 
   useEffect(() => {
-    const updateH = () => setDeviceH(window.innerHeight);
+    const node = sheetRef.current?.parentElement;
+    if (!node) return;
+    const updateH = () => setDeviceH(node.clientHeight || window.innerHeight);
     updateH();
+    const observer = new ResizeObserver(updateH);
+    observer.observe(node);
     window.addEventListener("resize", updateH);
-    return () => window.removeEventListener("resize", updateH);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateH);
+    };
   }, []);
 
   const topPx = dragY != null ? dragY : SNAP_FRACTION[snap] * deviceH;
@@ -97,6 +105,7 @@ export function BottomSheet({
 
   return (
     <div
+      ref={sheetRef}
       style={{
         position: "absolute",
         left: 0,

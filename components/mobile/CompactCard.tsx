@@ -12,7 +12,7 @@ export function CompactCard({
   listing,
   totalCost,
   onSelect,
-  cardRadius = 14
+  cardRadius = 11
 }: {
   listing: RankedListing;
   totalCost: TotalMonthlyCost;

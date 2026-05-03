@@ -15,7 +15,7 @@ const ERROR_COLOR = "#EF4444";
 const MUTED = "#64748B";
 const SNOW = "#F7FAFC";
 
-function buildStyle(opacity = 96, saturation = -5): StyleSpecification {
+function buildStyle(opacity = 59, saturation = -25): StyleSpecification {
   return {
     version: 8,
     sources: {
@@ -121,9 +121,9 @@ function addListingLayers(map: MapLibreMap) {
         ["linear"],
         ["zoom"],
         9,
-        ["case", ["get", "selected"], 20, 14],
+        ["case", ["get", "selected"], 13, 9.1],
         15,
-        ["case", ["get", "selected"], 46, 32]
+        ["case", ["get", "selected"], 29.9, 20.8]
       ],
       "circle-opacity": ["case", ["get", "selected"], 0.22, 0.13],
       "circle-blur": 0.7
@@ -169,9 +169,9 @@ function addListingLayers(map: MapLibreMap) {
         ["linear"],
         ["zoom"],
         9,
-        ["case", ["get", "selected"], 8, 5.5],
+        ["case", ["get", "selected"], 5.2, 3.575],
         15,
-        ["case", ["get", "selected"], 13, 9]
+        ["case", ["get", "selected"], 8.45, 5.85]
       ],
       "circle-stroke-color": "#fff",
       "circle-stroke-width": ["case", ["get", "selected"], 2.5, 2],
@@ -204,7 +204,7 @@ function addListingLayers(map: MapLibreMap) {
     source: LISTINGS_SOURCE_ID,
     paint: {
       "circle-color": "rgba(0,0,0,0)",
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 18, 15, 26]
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 11.7, 15, 16.9]
     }
   });
 }

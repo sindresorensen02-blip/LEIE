@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { applyListingQuery } from "@/lib/filtering";
 import { calculateTotalMonthlyCost, type TotalMonthlyCost } from "@/lib/totalCost";
 import type { ListingFilters, ListingSort, RankedListing } from "@/lib/types";
 import { BottomSheet, type SheetSort } from "./mobile/BottomSheet";
 import { DEFAULT_FILTERS, FiltersDrawer } from "./mobile/FiltersDrawer";
+import { IOSDevice } from "./mobile/IOSDevice";
 import { MobileTopBar } from "./mobile/MobileTopBar";
 import { MapView } from "./MapView";
 
@@ -18,7 +19,7 @@ function sheetSortToListingSort(sort: SheetSort): ListingSort {
   return "cheapest";
 }
 
-export function LeieApp({ initialListings }: { initialListings: RankedListing[] }) {
+function LeiePhoneSurface({ initialListings }: { initialListings: RankedListing[] }) {
   const [filters, setFilters] = useState<ListingFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SheetSort>("cheapest");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -73,10 +74,11 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
     filters.includeShortTerm === false;
 
   return (
-    <main
+    <div
       style={{
-        position: "fixed",
-        inset: 0,
+        position: "relative",
+        width: "100%",
+        height: "100%",
         overflow: "hidden",
         background: "#F7FAFC",
         fontFamily: '"DM Sans", ui-sans-serif, system-ui, sans-serif'
@@ -124,6 +126,51 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
           accent={ACCENT}
         />
       )}
+    </div>
+  );
+}
+
+export function LeieApp({ initialListings }: { initialListings: RankedListing[] }) {
+  const [framed, setFramed] = useState(false);
+
+  useEffect(() => {
+    const update = () => setFramed(window.innerWidth >= 480);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  if (!framed) {
+    return (
+      <main
+        style={{
+          position: "fixed",
+          inset: 0,
+          overflow: "hidden",
+          background: "#F7FAFC",
+          fontFamily: '"DM Sans", ui-sans-serif, system-ui, sans-serif'
+        }}
+      >
+        <LeiePhoneSurface initialListings={initialListings} />
+      </main>
+    );
+  }
+
+  return (
+    <main
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#0a0f1e",
+        fontFamily: '"DM Sans", ui-sans-serif, system-ui, sans-serif'
+      }}
+    >
+      <IOSDevice>
+        <LeiePhoneSurface initialListings={initialListings} />
+      </IOSDevice>
     </main>
   );
 }

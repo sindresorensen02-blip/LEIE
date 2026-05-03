@@ -53,8 +53,7 @@ export function MobileTopBar({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "16px 16px 8px",
-          paddingTop: "max(16px, env(safe-area-inset-top))"
+          padding: "56px 16px 8px"
         }}
       >
         <Logo a1={accent} a2={teal} />

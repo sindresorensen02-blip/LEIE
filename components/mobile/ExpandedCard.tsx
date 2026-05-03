@@ -39,7 +39,7 @@ export function ExpandedCard({
   accent,
   teal,
   error,
-  cardRadius = 14
+  cardRadius = 11
 }: {
   listing: RankedListing;
   totalCost: TotalMonthlyCost;
