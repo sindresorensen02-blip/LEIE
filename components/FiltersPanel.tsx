@@ -1,11 +1,10 @@
 "use client";
 
 import { SlidersHorizontal } from "lucide-react";
-import type { ListingFilters, ListingSort, PropertyType, RentalSource } from "@/lib/types";
+import type { ListingFilters, PropertyType, RentalSource } from "@/lib/types";
 
 const propertyTypes: Array<PropertyType | "all"> = ["all", "room", "shared_room", "studio", "apartment", "house"];
 const sources: Array<RentalSource | "all"> = ["all", "finn", "airbnb", "hybel", "utleiemegleren", "heimstaden"];
-const sorts: ListingSort[] = ["cheapest", "newest", "largest", "closest"];
 
 export function FiltersPanel({
   filters,
@@ -32,12 +31,6 @@ export function FiltersPanel({
             value={filters.maxPrice ?? ""}
             onChange={(event) => onChange({ ...filters, maxPrice: event.target.value ? Number(event.target.value) : null })}
           />
-        </label>
-        <label>
-          <span className="mb-1 block text-frost/60">Sort</span>
-          <select className="field" value={filters.sort ?? "cheapest"} onChange={(event) => onChange({ ...filters, sort: event.target.value as ListingSort })}>
-            {sorts.map((sort) => <option key={sort} value={sort}>{sort}</option>)}
-          </select>
         </label>
         <label>
           <span className="mb-1 block text-frost/60">Type</span>
