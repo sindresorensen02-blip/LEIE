@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "seed": "tsx scripts/seed.ts",
     "scrape": "tsx scripts/scrape.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "watch:pull": "while true; do git pull --ff-only origin claude/fix-map-pins-disappearing-unhVs; sleep 10; done"
   },
   "dependencies": {
     "better-sqlite3": "^11.9.1",
