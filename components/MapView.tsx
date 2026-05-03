@@ -232,12 +232,17 @@ export function MapView({
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const listingsByIdRef = useRef(new globalThis.Map<string, RankedListing>());
+  const onSelectRef = useRef(onSelect);
   const [mapReady, setMapReady] = useState(false);
 
   const listingFeatures = useMemo(
     () => listingsToFeatureCollection(listings, selectedId),
     [listings, selectedId]
   );
+
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   useEffect(() => {
     listingsByIdRef.current = new globalThis.Map(listings.map((listing) => [listing.id, listing]));
@@ -274,7 +279,7 @@ export function MapView({
       const listing = listingsByIdRef.current.get(listingId);
       if (!listing || listing.latitude == null || listing.longitude == null) return;
 
-      onSelect(listing);
+      onSelectRef.current(listing);
       map.easeTo({
         center: [listing.longitude, listing.latitude],
         zoom: Math.max(map.getZoom(), 13.3),
@@ -303,8 +308,9 @@ export function MapView({
       map.off("mouseleave", "listing-hit-area", hidePointer);
       map.remove();
       mapRef.current = null;
+      setMapReady(false);
     };
-  }, [onSelect]);
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
