@@ -9,8 +9,11 @@ export function Logo({ className }: { className?: string }) {
     <img
       src={src}
       onError={() => setSrc("/images/leie-logo.svg")}
-      alt="Leie"
-      className={clsx("select-none", className)}
+      alt="LEIE"
+      className={clsx(
+        "block h-auto w-[110px] select-none object-contain md:w-[140px]",
+        className
+      )}
       draggable={false}
     />
   );

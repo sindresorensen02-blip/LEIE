@@ -17,25 +17,28 @@ export function TopBar({
   onToggleListings: () => void;
 }) {
   return (
-    <header className="glass z-30 flex items-center justify-between gap-3 rounded-lg px-3 py-2">
-      <Logo className="h-8 w-auto md:h-9" />
+    <header className="surface-translucent flex items-center justify-between gap-3 px-3 py-2 md:px-4 md:py-2.5">
+      <Logo />
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={onToggleFilters}
-          className="inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium text-frost transition hover:border-cyan/40 hover:bg-cyan/10"
+          aria-expanded={filtersOpen}
+          className="btn-secondary !px-2.5 !py-1.5 text-xs"
         >
-          <SlidersHorizontal size={14} className="text-cyan" />
-          Filters
+          <SlidersHorizontal size={14} className="text-brand-blue" />
+          <span className="hidden sm:inline">Filters</span>
           {filtersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
         <button
           type="button"
           onClick={onToggleListings}
-          className="inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium text-frost transition hover:border-cyan/40 hover:bg-cyan/10"
+          aria-expanded={listingsOpen}
+          className="btn-secondary !px-2.5 !py-1.5 text-xs"
         >
-          <PanelBottom size={14} className="text-cyan" />
-          {listingCount} listings
+          <PanelBottom size={14} className="text-brand-blue" />
+          <span className="font-semibold text-navy">{listingCount}</span>
+          <span className="hidden sm:inline">listings</span>
           {listingsOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
         </button>
       </div>

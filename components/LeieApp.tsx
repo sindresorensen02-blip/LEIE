@@ -66,11 +66,11 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-ink">
+    <main className="relative min-h-screen overflow-hidden bg-snow text-navy">
       <MapView listings={listings} selectedId={selected?.id ?? null} onSelect={handleSelect} />
 
       <div className="pointer-events-none fixed right-3 top-3 z-50 md:right-5 md:top-4">
-        <span className="rounded-full border border-white/15 bg-ink/70 px-2 py-0.5 font-mono text-[11px] text-frost/70 backdrop-blur">
+        <span className="rounded-full border border-ice bg-white/80 px-2 py-0.5 font-mono text-[11px] text-muted shadow-card backdrop-blur">
           v{APP_VERSION}
         </span>
       </div>
@@ -85,7 +85,7 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
             onToggleListings={() => setListingsOpen((open) => !open)}
           />
           {filtersOpen && (
-            <div className="mt-2 max-h-[52vh] overflow-y-auto rounded-lg">
+            <div className="mt-2 max-h-[52vh] overflow-y-auto">
               <FiltersPanel filters={filters} onChange={setFilters} />
             </div>
           )}
@@ -98,17 +98,17 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
             <button
               type="button"
               onClick={() => setListingsOpen(true)}
-              className="glass flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm text-frost transition hover:border-cyan/40 md:max-w-xl"
+              className="surface flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:border-brand-blue/40 md:max-w-xl"
             >
-              <span>
-                <span className="mb-1 inline-flex rounded-full border border-emerald-300/30 bg-emerald-400/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-200">
+              <span className="min-w-0">
+                <span className="mb-1 inline-flex rounded-full bg-brand-teal/12 px-2 py-0.5 text-[11px] font-semibold text-brand-teal">
                   Quick pick
                 </span>
-                <span className="block font-semibold text-cyan">{selected.title}</span>
-                <span className="text-xs text-frost/65">
+                <span className="block truncate font-semibold text-navy">{selected.title}</span>
+                <span className="text-xs text-muted">
                   {selected.area} · {selected.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK ·{" "}
                   {selected.marketSignal === "under_market"
-                    ? "under market"
+                    ? "below market"
                     : selected.marketSignal === "market_price"
                       ? "around market"
                       : selected.marketSignal === "above_market"
@@ -116,16 +116,20 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
                         : "market pending"}
                 </span>
               </span>
-              <span className="rounded-full border border-cyan/30 px-3 py-1 text-xs text-cyan">Open</span>
+              <span className="ml-2 shrink-0 rounded-full bg-brand-blue/10 px-3 py-1 text-xs font-medium text-brand-blue">
+                Open
+              </span>
             </button>
           )}
 
           {listingsOpen && (
-            <div className="glass max-h-[58vh] overflow-hidden rounded-lg">
-              <div className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
+            <div className="surface max-h-[58vh] overflow-hidden">
+              <div className="flex items-center justify-between gap-2 border-b border-ice px-3 py-2">
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold text-frost">{listings.length} listings</div>
-                  <div className="truncate text-[11px] text-frost/55">Green = under market · yellow = fair · red = expensive</div>
+                  <div className="text-sm font-semibold text-navy">{listings.length} listings</div>
+                  <div className="truncate text-[11px] text-muted">
+                    Teal = below market · gray = fair · red = above market
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <select
@@ -135,13 +139,15 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
                     onChange={(event) => handleSortChange(event.target.value as ListingSort)}
                   >
                     {(Object.keys(sortLabels) as ListingSort[]).map((sort) => (
-                      <option key={sort} value={sort}>{sortLabels[sort]}</option>
+                      <option key={sort} value={sort}>
+                        {sortLabels[sort]}
+                      </option>
                     ))}
                   </select>
                   <button
                     type="button"
                     onClick={() => setListingsOpen(false)}
-                    className="rounded-md border border-white/10 px-2 py-1 text-xs text-frost/70 transition hover:border-cyan/40 hover:text-cyan"
+                    className="rounded-lg border border-ice px-2 py-1 text-xs text-muted transition hover:border-brand-blue/40 hover:text-brand-blue"
                   >
                     Hide
                   </button>
@@ -176,24 +182,28 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
             <button
               type="button"
               onClick={() => setListingsOpen(true)}
-              className="glass flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm text-frost transition hover:border-cyan/40"
+              className="surface flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:border-brand-blue/40"
             >
-              <span>
-                <span className="block font-semibold text-cyan">{selected.title}</span>
-                <span className="text-xs text-frost/65">
+              <span className="min-w-0">
+                <span className="block truncate font-semibold text-navy">{selected.title}</span>
+                <span className="text-xs text-muted">
                   {selected.area} · {selected.estimatedMonthlyNok?.toLocaleString("nb-NO") ?? "No price"} NOK
                 </span>
               </span>
-              <span className="rounded-full border border-cyan/30 px-3 py-1 text-xs text-cyan">Panel</span>
+              <span className="ml-2 shrink-0 rounded-full bg-brand-blue/10 px-3 py-1 text-xs font-medium text-brand-blue">
+                Open panel
+              </span>
             </button>
           )}
 
           {listingsOpen && (
-            <div className="glass flex h-full flex-col overflow-hidden rounded-lg">
-              <div className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
+            <div className="surface flex h-full flex-col overflow-hidden">
+              <div className="flex items-center justify-between gap-2 border-b border-ice px-3 py-2">
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold text-frost">{listings.length} listings</div>
-                  <div className="truncate text-[11px] text-frost/55">Click pins or cards. Map stays interactive.</div>
+                  <div className="text-sm font-semibold text-navy">{listings.length} listings</div>
+                  <div className="truncate text-[11px] text-muted">
+                    Click pins or cards. Map stays interactive.
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <select
@@ -203,13 +213,15 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
                     onChange={(event) => handleSortChange(event.target.value as ListingSort)}
                   >
                     {(Object.keys(sortLabels) as ListingSort[]).map((sort) => (
-                      <option key={sort} value={sort}>{sortLabels[sort]}</option>
+                      <option key={sort} value={sort}>
+                        {sortLabels[sort]}
+                      </option>
                     ))}
                   </select>
                   <button
                     type="button"
                     onClick={() => setListingsOpen(false)}
-                    className="rounded-md border border-white/10 px-2 py-1 text-xs text-frost/70 transition hover:border-cyan/40 hover:text-cyan"
+                    className="rounded-lg border border-ice px-2 py-1 text-xs text-muted transition hover:border-brand-blue/40 hover:text-brand-blue"
                   >
                     Hide
                   </button>

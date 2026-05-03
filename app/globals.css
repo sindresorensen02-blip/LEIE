@@ -3,55 +3,150 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
-  background: #04060b;
+  color-scheme: light;
+  --color-brand-blue: #0B6FF3;
+  --color-brand-cyan: #05B6E8;
+  --color-brand-teal: #00C7A7;
+  --color-navy: #102033;
+  --color-snow: #F7FAFC;
+  --color-ice: #DDE7EF;
+  --color-muted: #64748B;
+  --color-amber: #F59E0B;
+  --color-error: #EF4444;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(91, 227, 242, 0.18), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(43, 196, 217, 0.12), transparent 32%),
-    #04060b;
-  color: #e8f1ff;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-snow);
+  color: var(--color-navy);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 @layer components {
+  .surface {
+    background: #ffffff;
+    border: 1px solid var(--color-ice);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04), 0 4px 16px rgba(16, 32, 51, 0.06);
+  }
+
+  .surface-translucent {
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid var(--color-ice);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04), 0 4px 16px rgba(16, 32, 51, 0.06);
+    backdrop-filter: saturate(140%) blur(14px);
+  }
+
+  /* Legacy `.glass` alias used by older components — points to translucent surface so nothing breaks */
   .glass {
-    border: 1px solid rgba(183, 234, 244, 0.18);
-    background: linear-gradient(145deg, rgba(8, 17, 31, 0.86), rgba(4, 8, 17, 0.66));
-    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.36);
-    backdrop-filter: blur(22px);
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid var(--color-ice);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04), 0 4px 16px rgba(16, 32, 51, 0.06);
+    backdrop-filter: saturate(140%) blur(14px);
   }
 
   .field {
     width: 100%;
-    border-radius: 8px;
-    border: 1px solid rgba(183, 234, 244, 0.16);
-    background: rgba(4, 8, 17, 0.72);
-    color: #e8f1ff;
+    border-radius: 0.625rem;
+    border: 1px solid var(--color-ice);
+    background: #ffffff;
+    color: var(--color-navy);
     outline: none;
-    padding: 10px 12px;
+    padding: 0.55rem 0.75rem;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
+
+  .field::placeholder {
+    color: var(--color-muted);
+  }
+
+  .field:hover {
+    border-color: #c8d4dd;
   }
 
   .field:focus {
-    border-color: rgba(91, 227, 242, 0.72);
-    box-shadow: 0 0 0 3px rgba(91, 227, 242, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(11, 111, 243, 0.18);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    background: var(--color-brand-blue);
+    color: #ffffff;
+    padding: 0.55rem 0.9rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: background-color 120ms ease, box-shadow 120ms ease,
+      transform 80ms ease;
+  }
+
+  .btn-primary:hover {
+    background: #0a63d8;
+  }
+
+  .btn-primary:active {
+    transform: translateY(1px);
+  }
+
+  .btn-primary:focus-visible {
+    box-shadow: 0 0 0 3px rgba(11, 111, 243, 0.28);
+    outline: none;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    background: #ffffff;
+    color: var(--color-navy);
+    padding: 0.5rem 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--color-ice);
+    transition: border-color 120ms ease, background-color 120ms ease;
+  }
+
+  .btn-secondary:hover {
+    border-color: #c8d4dd;
+    background: #fbfdfe;
+  }
+
+  .btn-secondary:focus-visible {
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(11, 111, 243, 0.2);
+    outline: none;
   }
 }
 
+/* Map control overrides for light basemap */
 .maplibregl-ctrl-bottom-right {
   right: 14px;
   bottom: 92px;
@@ -59,19 +154,18 @@ select {
 
 .maplibregl-ctrl-group {
   overflow: hidden;
-  border: 1px solid rgba(183, 234, 244, 0.16) !important;
-  border-radius: 8px !important;
-  background: rgba(4, 8, 17, 0.76) !important;
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28) !important;
-  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-ice) !important;
+  border-radius: 0.625rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(16, 32, 51, 0.08) !important;
 }
 
 .maplibregl-ctrl-group button {
-  filter: invert(1) hue-rotate(135deg);
+  filter: none;
 }
 
 .maplibregl-ctrl-attrib {
-  border-radius: 8px;
-  background: rgba(4, 8, 17, 0.7) !important;
-  color: rgba(232, 241, 255, 0.72) !important;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--color-muted) !important;
 }

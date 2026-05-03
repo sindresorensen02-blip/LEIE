@@ -12,12 +12,12 @@ const leieMapStyle: StyleSpecification = {
   version: 8,
   glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
   sources: {
-    cartoVoyager: {
+    cartoPositron: {
       type: "raster",
       tiles: [
-        "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
       ],
       tileSize: 256,
       attribution:
@@ -29,29 +29,26 @@ const leieMapStyle: StyleSpecification = {
       id: "leie-background",
       type: "background",
       paint: {
-        "background-color": "#102536"
+        "background-color": "#F7FAFC"
       }
     },
     {
-      id: "carto-voyager-readable",
+      id: "carto-positron",
       type: "raster",
-      source: "cartoVoyager",
+      source: "cartoPositron",
       paint: {
-        "raster-opacity": 0.78,
-        "raster-saturation": -0.42,
-        "raster-contrast": 0.08,
-        "raster-brightness-min": 0.12,
-        "raster-brightness-max": 0.86
+        "raster-opacity": 0.95,
+        "raster-saturation": -0.05
       }
     }
   ]
 };
 
 const signalColors: Record<MarketSignal, string> = {
-  under_market: "#34D399",
-  market_price: "#FACC15",
-  above_market: "#F87171",
-  unknown: "#5BE3F2"
+  under_market: "#00C7A7",
+  market_price: "#64748B",
+  above_market: "#EF4444",
+  unknown: "#0B6FF3"
 };
 
 type ListingFeatureProperties = {
@@ -134,8 +131,8 @@ function addListingLayers(map: MapLibreMap) {
         15,
         ["case", ["get", "selected"], 42, 30]
       ],
-      "circle-opacity": ["case", ["get", "selected"], 0.34, 0.22],
-      "circle-blur": 0.78
+      "circle-opacity": ["case", ["get", "selected"], 0.22, 0.14],
+      "circle-blur": 0.7
     }
   });
 
@@ -147,8 +144,8 @@ function addListingLayers(map: MapLibreMap) {
     paint: {
       "circle-color": "rgba(0,0,0,0)",
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 12, 15, 20],
-      "circle-stroke-color": "#E8F1FF",
-      "circle-stroke-opacity": 0.86,
+      "circle-stroke-color": "#00C7A7",
+      "circle-stroke-opacity": 0.85,
       "circle-stroke-width": 2
     }
   });
@@ -161,7 +158,7 @@ function addListingLayers(map: MapLibreMap) {
     paint: {
       "circle-color": "rgba(0,0,0,0)",
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 16, 15, 26],
-      "circle-stroke-color": "#5BE3F2",
+      "circle-stroke-color": "#0B6FF3",
       "circle-stroke-opacity": 1,
       "circle-stroke-width": 4
     }
@@ -184,9 +181,9 @@ function addListingLayers(map: MapLibreMap) {
         signalColors.unknown
       ],
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, ["case", ["get", "selected"], 8, 6], 15, ["case", ["get", "selected"], 13, 9]],
-      "circle-stroke-color": "#E8F1FF",
-      "circle-stroke-opacity": 0.92,
-      "circle-stroke-width": ["case", ["get", "selected"], 3, 1.6]
+      "circle-stroke-color": "#FFFFFF",
+      "circle-stroke-opacity": 1,
+      "circle-stroke-width": ["case", ["get", "selected"], 3, 2]
     }
   });
 
@@ -203,8 +200,8 @@ function addListingLayers(map: MapLibreMap) {
       "text-offset": [0.9, 0.7]
     },
     paint: {
-      "text-color": "#E8F1FF",
-      "text-halo-color": "#04101A",
+      "text-color": "#102033",
+      "text-halo-color": "#FFFFFF",
       "text-halo-width": 1.5
     }
   });
@@ -333,30 +330,31 @@ export function MapView({
   }, [listings, mapReady, selectedId]);
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#102536]">
+    <section className="relative min-h-screen overflow-hidden bg-snow">
       <div ref={mapContainerRef} className="absolute inset-0" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,transparent_0%,rgba(6,24,34,0.06)_42%,rgba(4,13,22,0.36)_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-[#07131d]/58 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-[#07131d]/62 to-transparent" />
 
-      <div className="glass pointer-events-auto absolute bottom-24 left-4 max-w-[280px] rounded-lg p-3 text-xs text-frost/80 md:bottom-5">
-        <div className="mb-2 font-semibold text-cyan">Market price signal</div>
+      <div className="surface-translucent pointer-events-auto absolute bottom-24 left-4 max-w-[260px] p-3 text-xs text-navy/85 md:bottom-5">
+        <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
+          Market price signal
+        </div>
         <div className="grid gap-1.5">
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.8)]" />
-            Under area market
+            <span className="h-2.5 w-2.5 rounded-full bg-brand-teal" />
+            Below market
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-yellow-300 shadow-[0_0_18px_rgba(250,204,21,0.7)]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-muted" />
             Around market
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-red-400 shadow-[0_0_18px_rgba(248,113,113,0.7)]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-error" />
             Above market
           </div>
-          <div className="flex items-center gap-2 text-frost/60">
-            <span className="grid h-4 w-4 place-items-center rounded-full border border-cyan/45 text-[10px] text-cyan">~</span>
-            Approximate area pin
+          <div className="flex items-center gap-2 text-muted">
+            <span className="grid h-4 w-4 place-items-center rounded-full border border-ice text-[10px] text-navy">
+              ~
+            </span>
+            Approximate area
           </div>
         </div>
       </div>
