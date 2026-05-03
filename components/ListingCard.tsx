@@ -55,7 +55,7 @@ export function ListingCard({
         "rounded-2xl border bg-white p-4 transition",
         selected
           ? "border-brand-blue/60 shadow-card-hover ring-1 ring-brand-blue/20"
-          : "border-ice shadow-card hover:border-[#c8d4dd] hover:shadow-card-hover focus-within:border-brand-blue/50"
+          : "border-ice shadow-card hover:border-ice-strong hover:shadow-card-hover focus-within:border-brand-blue/50"
       )}
       onClick={onSelect}
     >

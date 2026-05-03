@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl, { type GeoJSONSource, type Map as MapLibreMap, type StyleSpecification } from "maplibre-gl";
 import type { FeatureCollection, Point } from "geojson";
 import type { MarketSignal, RankedListing } from "@/lib/types";
+import { marketSignalColors, palette } from "@/lib/theme";
 
 const BERGEN_CENTER: [number, number] = [5.32415, 60.39299];
 const LISTINGS_SOURCE_ID = "leie-listings";
@@ -29,7 +30,7 @@ const leieMapStyle: StyleSpecification = {
       id: "leie-background",
       type: "background",
       paint: {
-        "background-color": "#F7FAFC"
+        "background-color": palette.snow
       }
     },
     {
@@ -44,12 +45,7 @@ const leieMapStyle: StyleSpecification = {
   ]
 };
 
-const signalColors: Record<MarketSignal, string> = {
-  under_market: "#00C7A7",
-  market_price: "#64748B",
-  above_market: "#EF4444",
-  unknown: "#0B6FF3"
-};
+const signalColors: Record<MarketSignal, string> = marketSignalColors;
 
 type ListingFeatureProperties = {
   id: string;
@@ -144,7 +140,7 @@ function addListingLayers(map: MapLibreMap) {
     paint: {
       "circle-color": "rgba(0,0,0,0)",
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 12, 15, 20],
-      "circle-stroke-color": "#00C7A7",
+      "circle-stroke-color": palette.brand.teal,
       "circle-stroke-opacity": 0.85,
       "circle-stroke-width": 2
     }
@@ -158,7 +154,7 @@ function addListingLayers(map: MapLibreMap) {
     paint: {
       "circle-color": "rgba(0,0,0,0)",
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 16, 15, 26],
-      "circle-stroke-color": "#0B6FF3",
+      "circle-stroke-color": palette.brand.blue,
       "circle-stroke-opacity": 1,
       "circle-stroke-width": 4
     }
@@ -181,7 +177,7 @@ function addListingLayers(map: MapLibreMap) {
         signalColors.unknown
       ],
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, ["case", ["get", "selected"], 8, 6], 15, ["case", ["get", "selected"], 13, 9]],
-      "circle-stroke-color": "#FFFFFF",
+      "circle-stroke-color": palette.white,
       "circle-stroke-opacity": 1,
       "circle-stroke-width": ["case", ["get", "selected"], 3, 2]
     }
@@ -200,8 +196,8 @@ function addListingLayers(map: MapLibreMap) {
       "text-offset": [0.9, 0.7]
     },
     paint: {
-      "text-color": "#102033",
-      "text-halo-color": "#FFFFFF",
+      "text-color": palette.navy,
+      "text-halo-color": palette.white,
       "text-halo-width": 1.5
     }
   });

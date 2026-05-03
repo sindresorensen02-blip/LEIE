@@ -21,21 +21,21 @@ npm install
 ## Run Locally
 
 ```bash
-npm run seed
+npm install
+npm run seed   # one-time: populates ./leie.db from lib/mockListings.ts
 npm run dev
 ```
 
-Open the local Next.js URL printed by the dev server.
+Open the local Next.js URL printed by the dev server. If you skip `npm run seed`,
+the app falls back to the in-memory mock listings (no DB writes), so the UI still
+works for a quick first look.
 
-## Bergen Hero Image
+## Brand assets
 
-The app expects the generated Bergen artwork here:
-
-```text
-public/images/bergen-leie-map.png
-```
-
-That image is now used as a compact onboarding/brand asset in the app chrome. It is not used as the coordinate system. The live rental map is rendered with MapLibre GL JS using real listing latitude/longitude values.
+The LEIE logo is rendered as inline SVG by `components/Logo.tsx` using the brand
+gradient (`#0B6FF3 → #05B6E8 → #00C7A7`). A standalone `public/images/leie-logo.svg`
+is kept for external use (og images, partner kits). The previous PNG variant was
+removed in favour of the inline SVG.
 
 ## Mock Data
 

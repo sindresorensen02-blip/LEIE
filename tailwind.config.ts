@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { palette } from "./lib/theme";
 
 const config: Config = {
   content: [
@@ -9,26 +10,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          blue: "#0B6FF3",
-          cyan: "#05B6E8",
-          teal: "#00C7A7"
-        },
-        navy: "#102033",
-        snow: "#F7FAFC",
-        ice: "#DDE7EF",
-        muted: "#64748B",
-        amber: "#F59E0B",
-        error: "#EF4444",
-        // legacy aliases preserved so any stragglers keep compiling
-        ink: "#102033",
-        cyan: "#05B6E8",
-        teal: "#00C7A7",
-        frost: "#102033"
+        brand: palette.brand,
+        navy: palette.navy,
+        snow: palette.snow,
+        ice: palette.ice,
+        "ice-strong": palette.iceStrong,
+        muted: palette.muted,
+        amber: palette.amber,
+        error: palette.error
       },
       backgroundImage: {
-        "brand-gradient":
-          "linear-gradient(135deg, #0B6FF3 0%, #05B6E8 50%, #00C7A7 100%)"
+        "brand-gradient": `linear-gradient(135deg, ${palette.brand.blue} 0%, ${palette.brand.cyan} 50%, ${palette.brand.teal} 100%)`
       },
       boxShadow: {
         card: "0 1px 2px rgba(16, 32, 51, 0.04), 0 4px 16px rgba(16, 32, 51, 0.06)",
