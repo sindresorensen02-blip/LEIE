@@ -79,7 +79,7 @@ export function ListingCard({
           <span className="text-xl font-semibold text-cyan">{formatNok(listing.estimatedMonthlyNok)}</span>
           <span
             className="inline-flex items-center gap-1 rounded-full border border-yellow-300/35 bg-yellow-300/10 px-2 py-0.5 text-[11px] font-medium text-yellow-100"
-            title={`Average electricity price in ${listing.area}`}
+            title="Average Bergen (NO5 zone) electricity price"
           >
             <Zap size={12} className="fill-yellow-200 text-yellow-200" />
             {formatKwhPrice(electricityPrice)}
