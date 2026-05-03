@@ -24,9 +24,9 @@ export function TopBar({
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-center gap-3">
           <img
-            src="/images/bergen-leie-map.png"
-            alt=""
-            className="h-14 w-10 rounded-md border border-cyan/25 object-cover shadow-glow"
+            src="/images/leie-logo.svg"
+            alt="Leie"
+            className="h-12 w-12 shrink-0"
           />
           <div>
             <div className="text-xs uppercase tracking-[0.28em] text-cyan/80">Leie for iOS</div>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" role="img" aria-label="Leie logo">
+  <defs>
+    <linearGradient id="leie-grad" x1="6" y1="14" x2="90" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="0.55" stop-color="#1FA9F0"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M14 84 V46 L48 16 L82 46 V84"
+    stroke="url(#leie-grad)"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <g transform="translate(34 44)">
+    <path
+      d="M2 6 H22 L30 14 V40 H2 Z"
+      fill="url(#leie-grad)"
+    />
+    <circle cx="23" cy="13" r="2.4" fill="#FFFFFF"/>
+    <path
+      d="M14 18 V32 M8 26 L14 32 L20 26"
+      stroke="#FFFFFF"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+  </g>
+</svg>
