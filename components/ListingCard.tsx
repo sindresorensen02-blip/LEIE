@@ -1,27 +1,47 @@
 "use client";
 
 import clsx from "clsx";
-import { ArrowUpRight, BedDouble, CalendarDays, House, Maximize2, TrendingDown, Zap } from "lucide-react";
+import {
+  ArrowUpRight,
+  BedDouble,
+  CalendarDays,
+  CircleHelp,
+  House,
+  Maximize2,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+  type LucideIcon
+} from "lucide-react";
+import type { KeyboardEvent } from "react";
 import { formatNok } from "@/lib/price";
-import { formatKwhPrice, getNeighborhoodElectricityPrice } from "@/lib/electricity";
-import { propertyTypeLabels, sourceLabels, type RankedListing } from "@/lib/types";
+import { formatKwhPrice, getBergenElectricityRate } from "@/lib/electricity";
+import { propertyTypeLabels, sourceLabels, type MarketSignal, type RankedListing } from "@/lib/types";
 
-const marketCopy = {
+const marketCopy: Record<
+  MarketSignal,
+  { label: string; className: string; Icon: LucideIcon }
+> = {
   under_market: {
     label: "Below market",
-    className: "border-brand-teal/25 bg-brand-teal/10 text-brand-teal"
+    className: "border-brand-teal/25 bg-brand-teal/10 text-brand-teal",
+    Icon: TrendingDown
   },
   market_price: {
     label: "Around market",
-    className: "border-ice bg-snow text-muted"
+    className: "border-ice bg-snow text-muted",
+    Icon: Minus
   },
   above_market: {
     label: "Above market",
-    className: "border-error/30 bg-error/10 text-error"
+    className: "border-error/30 bg-error/10 text-error",
+    Icon: TrendingUp
   },
   unknown: {
     label: "Market pending",
-    className: "border-ice bg-snow text-muted"
+    className: "border-ice bg-snow text-muted",
+    Icon: CircleHelp
   }
 };
 
@@ -41,23 +61,40 @@ export function ListingCard({
   onSelect?: () => void;
 }) {
   const signal = marketCopy[listing.marketSignal ?? "unknown"];
+  const SignalIcon = signal.Icon;
   const marketDelta =
     listing.marketDeltaPercent == null
       ? null
       : `${listing.marketDeltaPercent > 0 ? "+" : ""}${Math.round(listing.marketDeltaPercent)}%`;
-  const electricityPrice = getNeighborhoodElectricityPrice(listing.area);
+  const electricityPrice = getBergenElectricityRate();
   const isCheapest = listing.badges.includes("Cheapest");
   const isGoodValue = listing.badges.includes("Good value");
 
+  const interactiveProps = onSelect
+    ? {
+        role: "button" as const,
+        tabIndex: 0,
+        "aria-pressed": Boolean(selected),
+        onClick: onSelect,
+        onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect();
+          }
+        }
+      }
+    : {};
+
   return (
     <article
+      {...interactiveProps}
       className={clsx(
-        "rounded-2xl border bg-white p-4 transition",
+        "rounded-2xl border bg-white p-4 transition focus:outline-none",
+        onSelect && "cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-blue/40",
         selected
           ? "border-brand-blue/60 shadow-card-hover ring-1 ring-brand-blue/20"
           : "border-ice shadow-card hover:border-ice-strong hover:shadow-card-hover focus-within:border-brand-blue/50"
       )}
-      onClick={onSelect}
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -71,7 +108,7 @@ export function ListingCard({
           target="_blank"
           rel="noreferrer"
           className="rounded-lg border border-ice p-2 text-brand-blue transition hover:border-brand-blue/40 hover:bg-brand-blue/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/30"
-          aria-label="Open original listing"
+          aria-label={`Open original ${sourceLabels[listing.source]} listing for ${listing.title}`}
           onClick={(event) => event.stopPropagation()}
         >
           <ArrowUpRight size={15} />
@@ -84,10 +121,10 @@ export function ListingCard({
             {formatNok(listing.estimatedMonthlyNok)}
           </span>
           <span
-            className="inline-flex items-center gap-1 rounded-full border border-amber/30 bg-amber/10 px-2 py-0.5 text-[11px] font-medium text-amber"
+            className="inline-flex items-center gap-1 rounded-full border border-ice bg-snow px-2 py-0.5 text-[11px] font-medium text-muted"
             title="Average Bergen (NO5 zone) electricity price"
           >
-            <Zap size={11} />
+            <Zap size={11} aria-hidden />
             {formatKwhPrice(electricityPrice)}
           </span>
         </div>
@@ -100,7 +137,7 @@ export function ListingCard({
 
       <div className={clsx("mb-3 rounded-xl border px-3 py-2 text-xs", signal.className)}>
         <div className="flex items-center gap-1.5 font-semibold">
-          {listing.marketSignal === "under_market" && <TrendingDown size={12} aria-hidden />}
+          <SignalIcon size={12} aria-hidden />
           {signal.label}
         </div>
         <div className="mt-0.5 opacity-90">
@@ -112,19 +149,19 @@ export function ListingCard({
 
       <div className="grid grid-cols-2 gap-y-1.5 text-xs text-navy/85">
         <span className="flex items-center gap-2">
-          <House size={14} className="text-muted" />
+          <House size={14} className="text-muted" aria-hidden />
           {propertyTypeLabels[listing.propertyType]}
         </span>
         <span className="flex items-center gap-2">
-          <Maximize2 size={14} className="text-muted" />
+          <Maximize2 size={14} className="text-muted" aria-hidden />
           {listing.sizeM2 ?? "?"} m²
         </span>
         <span className="flex items-center gap-2">
-          <BedDouble size={14} className="text-muted" />
+          <BedDouble size={14} className="text-muted" aria-hidden />
           {listing.bedrooms ?? 0} bedrooms
         </span>
         <span className="flex items-center gap-2">
-          <CalendarDays size={14} className="text-muted" />
+          <CalendarDays size={14} className="text-muted" aria-hidden />
           {listing.availableFrom ?? "Ask"}
         </span>
       </div>
