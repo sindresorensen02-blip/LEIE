@@ -6,6 +6,7 @@ import { rankListings } from "@/lib/ranking";
 import { distanceKm, isNearBergen } from "@/lib/distance";
 import { BERGEN_SENTRUM } from "@/lib/neighborhoods";
 import type { ListingFilters, RankedListing } from "@/lib/types";
+import { APP_VERSION } from "@/lib/version";
 import { FiltersPanel } from "./FiltersPanel";
 import { ListingCard } from "./ListingCard";
 import { MapView } from "./MapView";
@@ -98,6 +99,12 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
   return (
     <main className="relative min-h-screen overflow-hidden bg-ink">
       <MapView listings={listings} selectedId={selected?.id ?? null} onSelect={handleSelect} />
+
+      <div className="pointer-events-none fixed right-3 top-3 z-50 md:right-5 md:top-4">
+        <span className="rounded-full border border-white/15 bg-ink/70 px-2 py-0.5 font-mono text-[11px] text-frost/70 backdrop-blur">
+          v{APP_VERSION}
+        </span>
+      </div>
 
       <div className="pointer-events-none absolute inset-x-3 top-3 z-40 md:inset-x-6 md:top-5">
         <div className="pointer-events-auto mx-auto max-w-6xl">
