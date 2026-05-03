@@ -1,8 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import { ArrowUpRight, BedDouble, CalendarDays, House, Maximize2 } from "lucide-react";
+import { ArrowUpRight, BedDouble, CalendarDays, House, Maximize2, Zap } from "lucide-react";
 import { formatNok } from "@/lib/price";
+import { formatKwhPrice, getNeighborhoodElectricityPrice } from "@/lib/electricity";
 import { propertyTypeLabels, sourceLabels, type RankedListing } from "@/lib/types";
 
 const marketCopy = {
@@ -44,6 +45,7 @@ export function ListingCard({
     listing.marketDeltaPercent == null
       ? null
       : `${listing.marketDeltaPercent > 0 ? "+" : ""}${Math.round(listing.marketDeltaPercent)}%`;
+  const electricityPrice = getNeighborhoodElectricityPrice(listing.area);
 
   return (
     <article
@@ -73,7 +75,16 @@ export function ListingCard({
       </div>
 
       <div className="mb-3">
-        <div className="text-xl font-semibold text-cyan">{formatNok(listing.estimatedMonthlyNok)}</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xl font-semibold text-cyan">{formatNok(listing.estimatedMonthlyNok)}</span>
+          <span
+            className="inline-flex items-center gap-1 rounded-full border border-yellow-300/35 bg-yellow-300/10 px-2 py-0.5 text-[11px] font-medium text-yellow-100"
+            title={`Average electricity price in ${listing.area}`}
+          >
+            <Zap size={12} className="fill-yellow-200 text-yellow-200" />
+            {formatKwhPrice(electricityPrice)}
+          </span>
+        </div>
         <div className="text-xs text-frost/55">
           {listing.priceNightlyNok
             ? `${formatNok(listing.priceNightlyNok)} nightly · estimated monthly`
