@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl, { type GeoJSONSource, type Map as MapLibreMap, type StyleSpecification } from "maplibre-gl";
-import type { FeatureCollection, Point } from "geojson";
 import type { MarketSignal, RankedListing } from "@/lib/types";
 import { marketSignalColors, palette } from "@/lib/theme";
+import { listingsToFeatureCollection, warnOnRejectedCoordinates } from "@/lib/mapFeatures";
 
 const BERGEN_CENTER: [number, number] = [5.32415, 60.39299];
 const LISTINGS_SOURCE_ID = "leie-listings";
@@ -46,50 +46,6 @@ const leieMapStyle: StyleSpecification = {
 };
 
 const signalColors: Record<MarketSignal, string> = marketSignalColors;
-
-type ListingFeatureProperties = {
-  id: string;
-  title: string;
-  marketSignal: MarketSignal;
-  selected: boolean;
-  cheapest: boolean;
-  approximate: boolean;
-};
-
-function hasValidBergenCoordinates(listing: RankedListing) {
-  return (
-    listing.latitude != null &&
-    listing.longitude != null &&
-    listing.latitude >= 60.2 &&
-    listing.latitude <= 60.55 &&
-    listing.longitude >= 5.1 &&
-    listing.longitude <= 5.6
-  );
-}
-
-function listingsToFeatureCollection(
-  listings: RankedListing[],
-  selectedId: string | null
-): FeatureCollection<Point, ListingFeatureProperties> {
-  return {
-    type: "FeatureCollection",
-    features: listings.filter(hasValidBergenCoordinates).map((listing) => ({
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [listing.longitude as number, listing.latitude as number]
-      },
-      properties: {
-        id: listing.id,
-        title: listing.title,
-        marketSignal: listing.marketSignal ?? "unknown",
-        selected: selectedId === listing.id,
-        cheapest: listing.badges.includes("Cheapest"),
-        approximate: listing.locationAccuracy === "approximate_area"
-      }
-    }))
-  };
-}
 
 function addListingLayers(map: MapLibreMap) {
   if (map.getSource(LISTINGS_SOURCE_ID)) return;
@@ -187,6 +143,7 @@ function addListingLayers(map: MapLibreMap) {
     id: "listing-approx-label",
     type: "symbol",
     source: LISTINGS_SOURCE_ID,
+    minzoom: 13,
     filter: ["==", ["get", "approximate"], true],
     layout: {
       "text-field": "~",
@@ -270,14 +227,10 @@ export function MapView({
       if (!listingId) return;
 
       const listing = listingsByIdRef.current.get(listingId);
-      if (!listing || listing.latitude == null || listing.longitude == null) return;
+      if (!listing) return;
 
+      // Fly-to is handled by the selectedId effect below to avoid double animation.
       onSelectRef.current(listing);
-      map.easeTo({
-        center: [listing.longitude, listing.latitude],
-        zoom: Math.max(map.getZoom(), 13.3),
-        duration: 650
-      });
     };
 
     const showPointer = () => {
@@ -311,26 +264,28 @@ export function MapView({
     const source = map.getSource(LISTINGS_SOURCE_ID) as GeoJSONSource | undefined;
     if (!source) return;
     source.setData(listingFeatures);
-  }, [listingFeatures, mapReady]);
+    warnOnRejectedCoordinates(listings);
+  }, [listingFeatures, listings, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
-    const selected = listings.find((listing) => listing.id === selectedId);
-    if (!map || !mapReady || !selected || selected.latitude == null || selected.longitude == null) return;
+    if (!mapReady || !map || !selectedId) return;
+    const selected = listingsByIdRef.current.get(selectedId);
+    if (!selected || selected.latitude == null || selected.longitude == null) return;
 
     map.easeTo({
       center: [selected.longitude, selected.latitude],
       zoom: Math.max(map.getZoom(), 12.7),
       duration: 500
     });
-  }, [listings, mapReady, selectedId]);
+  }, [mapReady, selectedId]);
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-snow">
       <div ref={mapContainerRef} className="absolute inset-0" />
 
       <div className="surface-translucent pointer-events-auto absolute bottom-24 left-4 max-w-[260px] p-3 text-xs text-navy/85 md:bottom-5">
-        <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
+        <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-strong">
           Market price signal
         </div>
         <div className="grid gap-1.5">

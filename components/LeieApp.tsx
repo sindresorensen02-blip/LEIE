@@ -1,17 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { applyListingQuery } from "@/lib/filtering";
 import { rankListings } from "@/lib/ranking";
 import { distanceKm } from "@/lib/distance";
 import { BERGEN_SENTRUM } from "@/lib/neighborhoods";
-import type { ListingFilters, ListingSort, RankedListing } from "@/lib/types";
+import type { ListingFilters, ListingSort, NormalizedListing, RankedListing } from "@/lib/types";
 import { APP_VERSION } from "@/lib/version";
 import { ClosedPanelPreview } from "./ClosedPanelPreview";
 import { FiltersPanel } from "./FiltersPanel";
 import { ListingsPanel } from "./ListingsPanel";
-import { MapView } from "./MapView";
 import { TopBar } from "./TopBar";
+
+const MapView = dynamic(() => import("./MapView").then((module) => module.MapView), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-snow" aria-hidden />
+});
 
 const defaultFilters: ListingFilters = {
   propertyType: "all",
@@ -22,9 +27,9 @@ const defaultFilters: ListingFilters = {
   lng: BERGEN_SENTRUM.longitude
 };
 
-export function LeieApp({ initialListings }: { initialListings: RankedListing[] }) {
+export function LeieApp({ initialListings }: { initialListings: NormalizedListing[] }) {
   const [filters, setFilters] = useState<ListingFilters>(defaultFilters);
-  const [selectedId, setSelectedId] = useState(initialListings[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialListings[0]?.id ?? null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [listingsOpen, setListingsOpen] = useState(true);
 
@@ -50,7 +55,12 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
       : ranked;
   }, [initialListings, filters]);
 
-  const selected = listings.find((listing) => listing.id === selectedId) ?? listings[0] ?? null;
+  const listingsById = useMemo(
+    () => new Map(listings.map((listing) => [listing.id, listing])),
+    [listings]
+  );
+
+  const selected = selectedId ? listingsById.get(selectedId) ?? null : null;
   const sort = filters.sort ?? "cheapest";
 
   function handleSelect(listing: RankedListing) {
@@ -72,7 +82,7 @@ export function LeieApp({ initialListings }: { initialListings: RankedListing[] 
       <MapView listings={listings} selectedId={selected?.id ?? null} onSelect={handleSelect} />
 
       <div className="pointer-events-none fixed right-3 top-3 z-50 md:right-5 md:top-4">
-        <span className="rounded-full border border-ice bg-white/80 px-2 py-0.5 font-mono text-[11px] text-muted shadow-card backdrop-blur">
+        <span className="rounded-full border border-ice bg-white/80 px-2 py-0.5 font-mono text-[11px] text-muted-strong shadow-card backdrop-blur">
           v{APP_VERSION}
         </span>
       </div>

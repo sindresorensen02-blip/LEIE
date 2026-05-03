@@ -17,6 +17,7 @@ export const palette = {
   ice: "#DDE7EF",
   iceStrong: "#C8D4DD",
   muted: "#64748B",
+  mutedStrong: "#475569",
   amber: "#F59E0B",
   error: "#EF4444"
 } as const;

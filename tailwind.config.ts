@@ -16,6 +16,7 @@ const config: Config = {
         ice: palette.ice,
         "ice-strong": palette.iceStrong,
         muted: palette.muted,
+        "muted-strong": palette.mutedStrong,
         amber: palette.amber,
         error: palette.error
       },

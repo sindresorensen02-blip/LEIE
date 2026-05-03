@@ -58,7 +58,7 @@ export function ListingsPanel({
       <div className="flex items-center justify-between gap-2 border-b border-ice px-3 py-2">
         <div className="min-w-0">
           <div className="text-sm font-semibold text-navy">{listings.length} listings</div>
-          <div className="truncate text-[11px] text-muted">{styles.tagline}</div>
+          <div className="truncate text-[11px] text-muted-strong">{styles.tagline}</div>
         </div>
         <div className="flex items-center gap-2">
           <select
@@ -97,11 +97,11 @@ export function ListingsPanel({
               key={listing.id}
               listing={listing}
               selected={selected?.id === listing.id}
-              onSelect={() => onSelect(listing)}
+              onSelect={onSelect}
             />
           ))}
           {styles.sliceTo && others.length > styles.sliceTo && (
-            <p className="text-center text-[11px] text-muted sm:col-span-2">
+            <p className="text-center text-[11px] text-muted-strong sm:col-span-2">
               Showing {styles.sliceTo} of {others.length} other matches. Filter to narrow further.
             </p>
           )}

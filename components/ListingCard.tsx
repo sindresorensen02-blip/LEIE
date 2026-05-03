@@ -14,7 +14,7 @@ import {
   Zap,
   type LucideIcon
 } from "lucide-react";
-import type { KeyboardEvent } from "react";
+import { memo, type KeyboardEvent } from "react";
 import { formatNok } from "@/lib/price";
 import { formatKwhPrice, getBergenElectricityRate } from "@/lib/electricity";
 import { propertyTypeLabels, sourceLabels, type MarketSignal, type RankedListing } from "@/lib/types";
@@ -51,15 +51,13 @@ const accuracyCopy = {
   approximate_area: "Approximate area"
 };
 
-export function ListingCard({
-  listing,
-  selected,
-  onSelect
-}: {
+type ListingCardProps = {
   listing: RankedListing;
   selected?: boolean;
-  onSelect?: () => void;
-}) {
+  onSelect?: (listing: RankedListing) => void;
+};
+
+function ListingCardImpl({ listing, selected, onSelect }: ListingCardProps) {
   const signal = marketCopy[listing.marketSignal ?? "unknown"];
   const SignalIcon = signal.Icon;
   const marketDelta =
@@ -70,16 +68,18 @@ export function ListingCard({
   const isCheapest = listing.badges.includes("Cheapest");
   const isGoodValue = listing.badges.includes("Good value");
 
+  const handleSelect = () => onSelect?.(listing);
   const interactiveProps = onSelect
     ? {
         role: "button" as const,
         tabIndex: 0,
         "aria-pressed": Boolean(selected),
-        onClick: onSelect,
+        "aria-current": selected ? ("true" as const) : undefined,
+        onClick: handleSelect,
         onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            onSelect();
+            handleSelect();
           }
         }
       }
@@ -121,7 +121,7 @@ export function ListingCard({
             {formatNok(listing.estimatedMonthlyNok)}
           </span>
           <span
-            className="inline-flex items-center gap-1 rounded-full border border-ice bg-snow px-2 py-0.5 text-[11px] font-medium text-muted"
+            className="inline-flex items-center gap-1 rounded-full border border-ice bg-snow px-2 py-0.5 text-[11px] font-medium text-muted-strong"
             title="Average Bergen (NO5 zone) electricity price"
           >
             <Zap size={11} aria-hidden />
@@ -166,7 +166,7 @@ export function ListingCard({
         </span>
       </div>
 
-      <div className="mt-3 rounded-lg border border-ice bg-snow px-3 py-1.5 text-[11px] text-muted">
+      <div className="mt-3 rounded-lg border border-ice bg-snow px-3 py-1.5 text-[11px] text-muted-strong">
         {accuracyCopy[listing.locationAccuracy]}
         {listing.locationAccuracy === "approximate_area" && " · pin uses neighborhood centroid"}
       </div>
@@ -193,7 +193,7 @@ export function ListingCard({
             </span>
           ))}
         {listing.distanceKm != null && (
-          <span className="rounded-full border border-ice px-2 py-1 text-[11px] text-muted">
+          <span className="rounded-full border border-ice px-2 py-1 text-[11px] text-muted-strong">
             {listing.distanceKm.toFixed(1)} km
           </span>
         )}
@@ -201,3 +201,5 @@ export function ListingCard({
     </article>
   );
 }
+
+export const ListingCard = memo(ListingCardImpl);
